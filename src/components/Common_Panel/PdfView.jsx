@@ -4,10 +4,13 @@ import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import Footer from '../Footer/Footer';
 import { Button } from '@mui/material';
-import PdfSetup from './PdfSetup';
-import pdf from './Maths1.pdf';
+import { useLocation } from 'react-router-dom';
+import PdfViewer from './PdfSetup';
 
 function PdfView(prop) {
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const pdfLink = params.get('qfile');
 
     return (
         <>
@@ -42,8 +45,8 @@ function PdfView(prop) {
             </div>
 
             <div>
-                <PdfSetup img={pdf} />
-                {/* <embed src="https://devunitbucket.s3.ap-south-1.amazonaws.com/1681740565465.97071681085807653.1694Handwritten%2BNotes-sample.pdf" width="800" height="1000" type="application/pdf"></embed> */}
+                {/* <PdfViewer img='https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf' /> */}
+                <embed src={pdfLink} className='w-[90vw] mx-auto h-[90svh]' type="application/pdf"></embed>
             </div>
 
             <Footer />

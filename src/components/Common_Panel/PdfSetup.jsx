@@ -5,7 +5,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const PdfViewer = (prop) => {
-    
+
     // State to keep track of the number of pages in the PDF
     const [numPages, setNumPages] = React.useState(null);
 
@@ -41,7 +41,7 @@ const PdfViewer = (prop) => {
             <div className='flex justify-center'>
                 {/* Render the PDF document */}
                 <Document file={prop.img} onLoadSuccess={onDocumentLoadSuccess}>
-                <embzed src="https://devunitbucket.s3.ap-south-1.amazonaws.com/1681740565465.97071681085807653.1694Handwritten%2BNotes-sample.pdf" type="" />
+                    {/* <embzed src="https://devunitbucket.s3.ap-south-1.amazonaws.com/1681740565465.97071681085807653.1694Handwritten%2BNotes-sample.pdf" type="" /> */}
                     {/* Render individual pages without the text layer and annotation layer */}
                     {numPages && renderPdfPages()}
                 </Document>

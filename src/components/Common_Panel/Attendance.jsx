@@ -15,6 +15,7 @@ import {
   Get_Attendance_List,
   Get_Student_List,
   TeacherProfile,
+  CreateAttendance
 } from "../API_Handling/HandlingSlice";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -25,6 +26,8 @@ const Attendance = () => {
   const year = today.getFullYear();
   const month = today.getMonth() + 1; // Months are zero-based, so we add 1
   const day = today.getDate();
+  const time = today.getTime();
+  const [Ctime, setCtime] = useState('');
   let formattedDate = `${year}/${month}/${day}`;
   // const [classId, subjectId] = useParams();
   const { classId, subjectId, sectionId } = useParams();
@@ -37,7 +40,7 @@ const Attendance = () => {
     // window.location.reload();
     dispatch(TeacherProfile());
     dispatch(GetClass());
-    dispatch(Get_Student_List({classId, sectionId}));
+    dispatch(Get_Student_List({ classId, sectionId }));
     // try {
     //   // console.log(date)
     //    response = axios({
@@ -56,7 +59,7 @@ const Attendance = () => {
     //   // return rejectWithValue(error.response.data);
     // }
   }, []);
-  const studentList = useSelector((state)=>state.API_Management.Get_Student_List);
+  const studentList = useSelector((state) => state.API_Management.Get_Student_List);
   const res = useSelector((state) => state.API_Management.GetClass);
   const res1 = res.map((item) =>
     item.filter((item) => item.class_id === classId)
@@ -72,19 +75,58 @@ const Attendance = () => {
   let students = useSelector(
     (state) => state.API_Management.Get_Attendance_List
   );
+  console.log(students);
   const [selectedOptions, setSelectedOptions] = useState(
     new Array(students.length).fill("")
   ); // Initialize selected options array
 
-  const handleOptionChange = (index, option) => {
+  const [attendance, setattendance] = useState('');
+
+  const handleOptionChange = async (index, option, studentId) => {
     const newSelectedOptions = [...selectedOptions];
     newSelectedOptions[index] = option;
-    setSelectedOptions(newSelectedOptions); // Update the selected options array
+    setSelectedOptions(newSelectedOptions);
+    const hours = today.getHours().toString().padStart(2, '0');
+    const minutes = today.getMinutes().toString().padStart(2, '0');
+    const seconds = today.getSeconds().toString().padStart(2, '0');
+    const currentTime = `${hours}:${minutes}:${seconds}`;
+    setCtime(currentTime)
+
+    const newAttendance = [...attendance]
+    newAttendance[index] = {
+      attendance: option,
+      student_id: studentId
+    };
+    setattendance(newAttendance);
+
   };
+  useEffect(() => {
+    console.log(attendance);
+    console.log(Ctime);
+    try {
+      const jsonData = {
+        class_id: classId,
+        subject_id: subjectId,
+        date: formattedDate,
+        time: Ctime,
+        student: attendance,
+      }
+      const response = dispatch(CreateAttendance(jsonData));
+      if (response.type == 'login/fulfilled') {
+        // navigate("/home");
+        console.log(response);
+        console.log('attendance sussecce');
+      }
+
+    } catch (error) {
+      console.error("Authentication failed:", error.message);
+    }
+  }, [Ctime, attendance]); // Only run the effect when Ctime or attendance changes
+
 
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
-     formattedDate = newDate.format('YYYY/MM/DD');
+    formattedDate = newDate.format('YYYY/MM/DD');
 
     console.log(formattedDate)
 
@@ -94,7 +136,7 @@ const Attendance = () => {
     );
 
   };
-  let attendance_list = useSelector((state)=>state.API_Management.Get_Attendance_List);
+  let attendance_list = useSelector((state) => state.API_Management.Get_Attendance_List);
   console.log("Here's Attendance list")
   console.log(attendance_list[0]);
   attendance_list = attendance_list[0];
@@ -197,7 +239,7 @@ const Attendance = () => {
         </div> */}
 
         <div className="my-8 grid grid-cols-1 gap-5">
-          {studentList && (selectedDate==null || selectedDate==formattedDate) ? (
+          {studentList && (selectedDate == null || selectedDate == formattedDate) ? (
             studentList.map((data, index) => (
               <div
                 key={index}
@@ -233,7 +275,7 @@ const Attendance = () => {
                     name={`attendance[${index}]`}
                     className="hidden"
                     id={`absent[${index}]`}
-                    onChange={() => handleOptionChange(index, "absent")} // Handle Absent option selection
+                    onChange={() => { handleOptionChange(index, "false", data.student_id) }} // Handle Absent option selection
                   />
                   <label
                     htmlFor={`absent[${index}]`}
@@ -242,11 +284,11 @@ const Attendance = () => {
                       width: "73px",
                       height: "30px",
                       backgroundColor:
-                        selectedOptions[index] === "absent"
+                        selectedOptions[index] === "false"
                           ? "red"
                           : "rgba(246, 247, 250, 1)",
                       color:
-                        selectedOptions[index] === "absent"
+                        selectedOptions[index] === "false"
                           ? "white"
                           : "rgba(199, 201, 217, 1)",
                     }}
@@ -258,7 +300,7 @@ const Attendance = () => {
                     name={`attendance[${index}]`}
                     className="hidden"
                     id={`present[${index}]`}
-                    onChange={() => handleOptionChange(index, "present")} // Handle Present option selection
+                    onChange={() => { handleOptionChange(index, "true", data.student_id) }} // Handle Present option selection
                   />
                   <label
                     htmlFor={`present[${index}]`}
@@ -267,11 +309,11 @@ const Attendance = () => {
                       width: "73px",
                       height: "30px",
                       backgroundColor:
-                        selectedOptions[index] === "present"
+                        selectedOptions[index] === "true"
                           ? "green"
                           : "rgba(246, 247, 250, 1)",
                       color:
-                        selectedOptions[index] === "present"
+                        selectedOptions[index] === "true"
                           ? "white"
                           : "rgba(199, 201, 217, 1)",
                     }}
@@ -282,92 +324,92 @@ const Attendance = () => {
               </div>
             ))
           ) : (
-            attendance_list && attendance_list!=null ? (
+            attendance_list && attendance_list != null ? (
               attendance_list.map((data, index) => (
-            <div
-            key={index}
-            className="rounded-xl flex justify-between"
-            style={{
-              width: "960px",
-              height: "60px",
-              border: "1px solid rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div className="flex ">
-              <div className="py-3 px-5">
                 <div
-                  className="rounded-full flex justify-center items-center font-bold"
+                  key={index}
+                  className="rounded-xl flex justify-between"
                   style={{
-                    height: "35px",
-                    width: "35px",
-                    backgroundColor: "rgba(237, 242, 255, 1)",
-                    color: "rgba(20, 20, 20, 0.1)",
+                    width: "960px",
+                    height: "60px",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
                   }}
                 >
-                  1
+                  <div className="flex ">
+                    <div className="py-3 px-5">
+                      <div
+                        className="rounded-full flex justify-center items-center font-bold"
+                        style={{
+                          height: "35px",
+                          width: "35px",
+                          backgroundColor: "rgba(237, 242, 255, 1)",
+                          color: "rgba(20, 20, 20, 0.1)",
+                        }}
+                      >
+                        1
+                      </div>
+                    </div>
+                    <div className="flex items-center h-full font-bold">
+                      {data.student_master.first_name}{" "}
+                      {data.student_master.last_name}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center pe-5 gap-3">
+                    <input
+                      type="radio"
+                      name={`attendance[${index}]`}
+                      className="hidden"
+                      id={`absent[${index}]`}
+                      onChange={() => { handleOptionChange(index, "false", data.student_id) }} // Handle Absent option selection
+                    />
+                    <label
+                      htmlFor={`absent[${index}]`}
+                      className="rounded cursor-pointer  transform transition-transform active:scale-90 text-center pt-1"
+                      style={{
+                        width: "73px",
+                        height: "30px",
+                        backgroundColor:
+                          selectedOptions[index] === "false"
+                            ? "red"
+                            : "rgba(246, 247, 250, 1)",
+                        color:
+                          selectedOptions[index] === "false"
+                            ? "white"
+                            : "rgba(199, 201, 217, 1)",
+                      }}
+                    >
+                      A
+                    </label>
+                    <input
+                      type="radio"
+                      name={`attendance[${index}]`}
+                      className="hidden"
+                      id={`present[${index}]`}
+                      onChange={() => { handleOptionChange(index, "true", data.student_id) }} // Handle Present option selection
+                    />
+                    <label
+                      htmlFor={`present[${index}]`}
+                      className="rounded cursor-pointer  transform transition-transform active:scale-90 text-center pt-1 ml-4"
+                      style={{
+                        width: "73px",
+                        height: "30px",
+                        backgroundColor:
+                          selectedOptions[index] === "true"
+                            ? "green"
+                            : "rgba(246, 247, 250, 1)",
+                        color:
+                          selectedOptions[index] === "true"
+                            ? "white"
+                            : "rgba(199, 201, 217, 1)",
+                      }}
+                    >
+                      P
+                    </label>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center h-full font-bold">
-                {data.student_master.first_name}{" "}
-                {data.student_master.last_name}
-              </div>
-            </div>
-            <div className="flex items-center justify-center pe-5 gap-3">
-              <input
-                type="radio"
-                name={`attendance[${index}]`}
-                className="hidden"
-                id={`absent[${index}]`}
-                onChange={() => handleOptionChange(index, "absent")} // Handle Absent option selection
-              />
-              <label
-                htmlFor={`absent[${index}]`}
-                className="rounded cursor-pointer  transform transition-transform active:scale-90 text-center pt-1"
-                style={{
-                  width: "73px",
-                  height: "30px",
-                  backgroundColor:
-                    selectedOptions[index] === "absent"
-                      ? "red"
-                      : "rgba(246, 247, 250, 1)",
-                  color:
-                    selectedOptions[index] === "absent"
-                      ? "white"
-                      : "rgba(199, 201, 217, 1)",
-                }}
-              >
-                A
-              </label>
-              <input
-                type="radio"
-                name={`attendance[${index}]`}
-                className="hidden"
-                id={`present[${index}]`}
-                onChange={() => handleOptionChange(index, "present")} // Handle Present option selection
-              />
-              <label
-                htmlFor={`present[${index}]`}
-                className="rounded cursor-pointer  transform transition-transform active:scale-90 text-center pt-1 ml-4"
-                style={{
-                  width: "73px",
-                  height: "30px",
-                  backgroundColor:
-                    selectedOptions[index] === "present"
-                      ? "green"
-                      : "rgba(246, 247, 250, 1)",
-                  color:
-                    selectedOptions[index] === "present"
-                      ? "white"
-                      : "rgba(199, 201, 217, 1)",
-                }}
-              >
-                P
-              </label>
-            </div>
-          </div>
-          ))):(
-            <h1>No data to show</h1>
-          )
+              ))) : (
+              <h1>No data to show</h1>
+            )
           )}
         </div>
       </div>

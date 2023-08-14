@@ -21,14 +21,19 @@ const QnA = () => {
   const [afile, setAfile] = useState("");
   const dispatch = useDispatch();
 
-  
+  useEffect(() => {
+    console.log(afile);
+  }, [afile])
+
+
+
   useEffect(() => {
     console.log("hello")
     dispatch(QnA_API({ classId, subjectId }));
     console.log(response)
   }, []);
 
-  const response = useSelector((state)=>state.API_Management.QnA_API)
+  const response = useSelector((state) => state.API_Management.QnA_API)
 
 
 
@@ -50,12 +55,20 @@ const QnA = () => {
     }
   };
   const [open, setOpen] = React.useState(false);
-  const handleOpen = ({answer}) => {setOpen(true); setAfile(answer)}
+  const handleOpen = (answer) => {
+    setOpen(true);
+    setAfile(answer)
+  }
   const handleClose = () => setOpen(false);
 
   const [openQuestion, setOpenQuestion] = React.useState(false);
-  const handleOpenQuestion = ({question}) => {setOpenQuestion(true); setQfile(question)}
-  const handleCloseQuestion = () => {setOpenQuestion(false);}
+  const handleOpenQuestion = (question) => {
+    setOpenQuestion(true);
+    setQfile(question)
+  }
+  const handleCloseQuestion = () => { setOpenQuestion(false); }
+
+  const [file, setFile] = useState('');
 
   return (
     <>
@@ -79,7 +92,7 @@ const QnA = () => {
               Do you want to share Answer paper?
             </div>
             <div className="flex mt-2 justify-center gap-5 items-center">
-              <Link to="/home/answerpdfview">
+              <Link to={`/home/answerpdfview?qfile=${afile}`}>
                 <Button
                   variant="contained"
                   size="small"
@@ -94,7 +107,6 @@ const QnA = () => {
                     boxShadow: "none",
                     color: "#C467FF",
                   }}
-                  onClick={<PdfView answer = {afile}/>}
                 >
                   Preview
                 </Button>
@@ -136,7 +148,7 @@ const QnA = () => {
               Do you want to share Question paper?
             </div>
             <div className="flex mt-2 justify-center gap-5 items-center">
-              <Link to="/home/questionpdfview">
+              <Link to={`/home/questionpdfview?qfile=${qfile}`}>
                 <Button
                   variant="contained"
                   size="small"
@@ -151,9 +163,8 @@ const QnA = () => {
                     boxShadow: "none",
                     color: "#C467FF",
                   }}
-                  onClick={<PdfView pdf={qfile} />}
                 >
-                  
+
                   Preview
                 </Button>
               </Link>
@@ -197,59 +208,59 @@ const QnA = () => {
 
         <div className=" flex justify-center py-16">
           <div className="grid grid-cols-2 gap-10">
-           {response.map((item)=>(
-            <div
-              className="rounded-xl relative"
-              style={{
-                height: "fit-content",
-                width: "460px",
-                border: "1px solid rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div className="px-6 py-8">
-                <div className="font-bold text-xl">{item.name}</div>
-              </div>
-              <div className="absolute top-0 right-0">
-                <div
-                  style={{
-                    borderBottomLeftRadius: "35px",
-                    borderTopRightRadius: "10px",
-                  }}
-                  className="py-3 text-green-700 bg-green-200 px-8 text-sm"
-                >
-                  Successful
+            {response.map((item) => (
+              <div
+                className="rounded-xl relative"
+                style={{
+                  height: "fit-content",
+                  width: "460px",
+                  border: "1px solid rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <div className="px-6 py-8">
+                  <div className="font-bold text-xl">{item.name}</div>
+                </div>
+                <div className="absolute top-0 right-0">
+                  <div
+                    style={{
+                      borderBottomLeftRadius: "35px",
+                      borderTopRightRadius: "10px",
+                    }}
+                    className="py-3 text-green-700 bg-green-200 px-8 text-sm"
+                  >
+                    Successful
+                  </div>
+                </div>
+
+                <div className="flex ">
+                  <button
+                    onClick={() => handleOpenQuestion(item.question_file)}
+                    className="rounded-bl-xl"
+                    style={{
+                      width: "230px",
+                      height: "50px",
+                      backgroundColor: "rgba(249, 239, 255, 1)",
+                      color: "rgba(196, 103, 255, 1)",
+                    }}
+                  >
+                    Sample Question
+                  </button>
+                  <button
+                    onClick={() => handleOpen(item.answer_file)}
+                    className="rounded-br-xl"
+                    style={{
+                      width: "230px",
+                      height: "50px",
+                      backgroundColor: "rgba(196, 103, 255, 1)",
+                      color: "white",
+                    }}
+                  >
+                    {/* {setAfile(item.answer_file)} */}
+                    Sample Answer
+                  </button>
                 </div>
               </div>
-
-              <div className="flex ">
-                <button
-                  onClick={()=>handleOpenQuestion(item.question_file)}
-                  className="rounded-bl-xl"
-                  style={{
-                    width: "230px",
-                    height: "50px",
-                    backgroundColor: "rgba(249, 239, 255, 1)",
-                    color: "rgba(196, 103, 255, 1)",
-                  }}
-                >
-                  Sample Question
-                </button>
-                <button
-                  onClick={()=>handleOpen(item.answer_file)}
-                  className="rounded-br-xl"
-                  style={{
-                    width: "230px",
-                    height: "50px",
-                    backgroundColor: "rgba(196, 103, 255, 1)",
-                    color: "white",
-                  }}
-                >
-                  {/* {setAfile(item.answer_file)} */}
-                  Sample Answer
-                </button>
-              </div>
-            </div>
-              ))} 
+            ))}
           </div>
         </div>
 

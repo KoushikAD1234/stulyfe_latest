@@ -293,7 +293,7 @@ export const Get_Topics = createAsyncThunk(
 // Read (get_attendance)
 export const Get_Attendance_List = createAsyncThunk(
   "Get_Attendance_List",
-  async ({classId, subjectId, formattedDate}, { rejectWithValue }) => {
+  async ({ classId, subjectId, formattedDate }, { rejectWithValue }) => {
     try {
       console.log(formattedDate)
       const response = await axios({
@@ -317,7 +317,7 @@ export const Get_Attendance_List = createAsyncThunk(
 // Read (get_student_list)
 export const Get_Student_List = createAsyncThunk(
   "Get_Student_List",
-  async ({classId, sectionId}, { rejectWithValue }) => {
+  async ({ classId, sectionId }, { rejectWithValue }) => {
     try {
       // console.log(date)
       const response = await axios({
@@ -382,7 +382,7 @@ export const Get_chapter_Notes = createAsyncThunk(
 );
 
 // Delete Notes
-export const DeleteNotes = createAsyncThunk("DeleteNotes", async (jsonData, {rejectWithValue}) => {
+export const DeleteNotes = createAsyncThunk("DeleteNotes", async (jsonData, { rejectWithValue }) => {
   try {
     console.log(jsonData)
     const response = await axios({
@@ -401,6 +401,30 @@ export const DeleteNotes = createAsyncThunk("DeleteNotes", async (jsonData, {rej
     return rejectWithValue(err.response.data);
   }
 });
+
+// Create Attendance
+export const CreateAttendance = createAsyncThunk(
+  "CreateAttendance",
+  async (jsonData, { rejectWithValue }) => {
+    try {
+      const response = await axios({
+        method: "post",
+        url: `http://13.233.3.122:8010/api/teacher/student/takeAttendance`,
+        data: jsonData,
+        headers: {
+          Authorization: Cookies.get("token"),
+        },
+      });
+      console.log(response);
+      alert("Data Updated Successfully");
+      return response.data
+    } catch (error) {
+      alert("Operation failed");
+      console.log("Not submitting data");
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 export const handlingAPIs = createSlice({
   name: "handlingAPI",

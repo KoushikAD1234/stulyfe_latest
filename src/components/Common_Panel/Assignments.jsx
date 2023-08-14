@@ -246,7 +246,7 @@ const Assignments = () => {
                 </div>
 
                 <div className="flex absolute bottom-0">
-                  <Link to="/home/assignmentpdfview">
+                  <Link to={`/home/questionpdfview?qfile=${encodeURIComponent(item.file)}`}>
                     <button
                       // onClick={() => <PdfViewer pdf={item.file} />}
                       className="rounded-bl-xl rounded-br-xl"

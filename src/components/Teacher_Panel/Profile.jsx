@@ -112,13 +112,13 @@ const Profile = () => {
                 className="font-bold"
                 style={{ color: "rgba(196, 103, 255, 1)" }}
               >
-                Class {res.class_master.class_name}
+                Class {res.class_masters.class_name}
               </div>
               <div className=" flex items-center justify-center mr-10">
                 <div style={{ color: "rgba(157, 159, 160, 1)" }}>Section</div>
                 <div className="flex items center justify-center ml-10 gap-6">
                   <Link
-                    to={`/home/subjects/${res.class_master.class_id}/${res.class_master.class_name}/${res.class_master.active}/${res.section_masters.section_id}`}
+                    to={`/home/subjects/${res.class_masters.class_id}/${res.class_masters.class_name}/${res.class_masters.active}/${res.section_masters.section_id}`}
                     className="px-4 rounded-xl"
                     style={{
                       background: "rgba(0, 0, 0, 0.1)",

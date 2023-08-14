@@ -44,7 +44,7 @@ const Notes = () => {
     console.log(...formData)
     console.log(subjectId)
     console.log(addNotes)
-    dispatch(AddNotes({formData, subjectId, addNotes}));
+    dispatch(AddNotes({ formData, subjectId, addNotes }));
   }
 
   const editNotes = () => {
@@ -59,11 +59,11 @@ const Notes = () => {
       .catch((err) => console.log(err));
   };
 
-  const deleteNotes = async () => {
+  const deleteNotes = async (id) => {
     console.log("delete button clicked");
-    console.log(uid);
+    console.log(id);
     const jsonData = {
-      handwritten_id: uid,
+      handwritten_id: id,
     };
     const data = JSON.stringify(jsonData);
     console.log(jsonData);
@@ -72,8 +72,8 @@ const Notes = () => {
     try {
       const response = await axios({
         method: "delete",
-        url: `http://13.233.3.122:8010/api/teacher/notes/deleteNotes`,
-        body: { handwritten_id: uid }, // Corrected: Use 'data' instead of 'body'
+        url: `http://13.233.3.122:8010/api/teacher/notes/deleteNotes?handwritten_id=${id}`,
+        body: { handwritten_id: id }, // Corrected: Use 'data' instead of 'body'
         headers: {
           Authorization: Cookies.get("token"),
         },
@@ -144,7 +144,7 @@ const Notes = () => {
                 type="text"
                 placeholder="Enter your chapter name"
                 value={addNotes}
-                onChange={(event)=>setAddNotes(event.target.value)}
+                onChange={(event) => setAddNotes(event.target.value)}
                 style={{
                   borderRadius: "4px",
                   border: "1px solid rgba(0, 0, 0, 0.10)",
@@ -165,7 +165,7 @@ const Notes = () => {
                   type="file"
                   ref={fileInputRef}
                   value={addFile}
-                  onChange={(event)=>setAddFile(event.target.value)}
+                  onChange={(event) => setAddFile(event.target.value)}
                 />
                 <div
                   onClick={handleUploadIconClick}
@@ -351,7 +351,7 @@ const Notes = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        deleteNotes();
+                        deleteNotes(item.handwritten_i);
                         setUid(item.handwritten_id);
                       }}
                     >
@@ -371,7 +371,7 @@ const Notes = () => {
                         handleeditOpen();
                         setUid(item.handwritten_id);
                       }}
-                      // onClick={()=>setUid(item.handwritten.id)}
+                    // onClick={()=>setUid(item.handwritten.id)}
                     >
                       <EditOutlinedIcon
                         style={{ color: "rgba(116, 116, 116, 1)" }}

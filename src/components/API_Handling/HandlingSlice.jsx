@@ -37,17 +37,18 @@ export const login = createAsyncThunk(
 // Add Notes
 export const AddNotes = createAsyncThunk(
   "AddNotes",
-  async ({ formData, subjectId, addNotes }, { rejectWithValue }) => {
+  async ({ formData, classId,  subjectId, addNotes }, { rejectWithValue }) => {
     try {
       console.log(...formData);
       console.log(subjectId);
       console.log(addNotes);
       const response = await axios({
         method: "post",
-        url: `http://13.233.3.122:8010/api/teacher/notes/addNotes?subject_id=${subjectId}&name=${addNotes}`,
+        url: `http://13.233.3.122:8010/api/teacher/notes/addNotes?class_id=${classId}&subject_id=${subjectId}&name=${addNotes}`,
         data: formData,
         headers: {
           Authorization: Cookies.get("token"),
+          "Content-Type": "multipart/form-data"
         },
       });
       console.log(response);
@@ -66,13 +67,13 @@ export const AddAssignments = createAsyncThunk(
   "AddAssignments",
   async ({ formData, classId, subjectId, sectionId, name, desc, date }, { rejectWithValue }) => {
     try {
-      console.log(...formData);
-      console.log(subjectId);
-      console.log(name, "api");
+      // console.log(...formData);
+      // console.log(subjectId);
+      console.log(name);
       const response = await axios({
         method: "post",
-        url: `http://13.233.3.122:8010/api/teacher/notes/addNotes?class_id=${classId}&subject_id=${subjectId}&section_id=${sectionId}&name=${name}&description=${desc}&submission_date=${date}`,
-        body: formData,
+        url: `http://13.233.3.122:8010/api/teacher/assignment/createAssignment?class_id=${classId}&subject_id=${subjectId}&section_id=${sectionId}&name=${name}&description=${desc}&submission_date=${date}`,
+        data: formData,
         headers: {
           Authorization: Cookies.get("token"),
         },
@@ -145,7 +146,7 @@ export const GetClass = createAsyncThunk(
           Authorization: Cookies.get("token"),
         },
       });
-      console.log(response);
+      console.log(response.data.data);
       return response.data.data;
     } catch (error) {
       console.log("Not submitting data");
@@ -456,7 +457,7 @@ export const handlingAPIs = createSlice({
       .addCase(TeacherProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.TeacherProfile.push(action.payload);
+        state.TeacherProfile=action.payload;
       })
       .addCase(TeacherProfile.rejected, (state, action) => {
         state.loading = false;
@@ -470,7 +471,7 @@ export const handlingAPIs = createSlice({
       .addCase(GetClass.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.GetClass.push(action.payload);
+        state.GetClass=action.payload;
       })
       .addCase(GetClass.rejected, (state, action) => {
         state.loading = false;

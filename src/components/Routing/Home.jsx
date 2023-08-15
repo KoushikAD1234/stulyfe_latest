@@ -34,7 +34,7 @@ const Home = () => {
         <Route exact path='/lecture/:subjectId' element={<Lecture />} />
         <Route exact path='/lecture_info/:chapterId/:subjectId' element={<Lecture_Info />} />
         <Route exact path='/chap_Details/:topicId/:chapterId' element={<Chapter_Details />} />
-        <Route exact path='/notes/:subjectId' element={<Notes />} />
+        <Route exact path='/notes/:classId/:subjectId' element={<Notes />} />
         <Route exact path='/qna/:classId/:subjectId' element={<QnA />} />
         <Route exact path='/assignments/:classId/:subjectId/:sectionId' element={<Assignments />} />
         <Route exact path='/attendance/:classId/:subjectId/:sectionId' element={<Attendance />} />

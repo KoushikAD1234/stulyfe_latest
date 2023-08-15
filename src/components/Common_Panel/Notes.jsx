@@ -23,12 +23,12 @@ import axios from "axios";
 
 const Notes = () => {
   const dispatch = useDispatch();
-  const { subjectId } = useParams();
+  const { classId, subjectId } = useParams();
   const [chapter_name, setChapter_name] = useState("");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(null);
   const [uid, setUid] = useState("");
   const [addNotes, setAddNotes] = useState("");
-  const [addFile, setAddFile] = useState("");
+  const [addFile, setAddFile] = useState(null);
 
   useEffect(() => {
     // console.log(subjectId);
@@ -38,14 +38,23 @@ const Notes = () => {
   const response = useSelector((state) => state.API_Management.Get_Notes);
   // const dispatch = useDispatch();
 
+  // const file1 = addFile.files[0];
+
   const handleAddNotes = () => {
-    const formData = new FormData();
-    formData.append("notes", addFile);
-    console.log(...formData)
-    console.log(subjectId)
-    console.log(addNotes)
-    dispatch(AddNotes({ formData, subjectId, addNotes }));
-  }
+    if (addFile) {
+      const formData = new FormData();
+      formData.append("notes", addFile);
+      console.log(...formData);
+      console.log(subjectId);
+      console.log(classId);
+      console.log(addNotes);
+      dispatch(AddNotes({ formData, classId, subjectId, addNotes }))
+        .then(() => window.location.reload())
+        .catch((err) => console.log(err));
+    } else {
+      alert("Please selected a file");
+    }
+  };
 
   const editNotes = () => {
     console.log("clicked");
@@ -53,6 +62,9 @@ const Notes = () => {
     // formData.append("name", chapter_name);
     formData.append("notes", file);
     console.log(...formData);
+    console.log(file);
+    console.log(subjectId)
+    console.log(classId)
     console.log(uid);
     dispatch(updateNotes({ formData, uid, chapter_name }))
       .then(() => window.location.reload())
@@ -67,13 +79,14 @@ const Notes = () => {
     };
     const data = JSON.stringify(jsonData);
     console.log(jsonData);
+    console.log(id);
     // dispatch(DeleteNotes(data)).then(()=>window.location.reload()).catch((err)=>alert("Not Deleted"))
 
     try {
       const response = await axios({
         method: "delete",
-        url: `http://13.233.3.122:8010/api/teacher/notes/deleteNotes?handwritten_id=${id}`,
-        body: { handwritten_id: id }, // Corrected: Use 'data' instead of 'body'
+        url: `http://13.233.3.122:8010/api/teacher/notes/deleteNotes`,
+        data: { handwritten_id: id }, // Corrected: Use 'data' instead of 'body'
         headers: {
           Authorization: Cookies.get("token"),
         },
@@ -164,8 +177,8 @@ const Notes = () => {
                   }}
                   type="file"
                   ref={fileInputRef}
-                  value={addFile}
-                  onChange={(event) => setAddFile(event.target.value)}
+                  // value={addFile}
+                  onChange={(event) => setAddFile(event.target.files[0])}
                 />
                 <div
                   onClick={handleUploadIconClick}
@@ -248,8 +261,8 @@ const Notes = () => {
                   }}
                   type="file"
                   ref={fileInputRef}
-                  value={file}
-                  onChange={(e) => setFile(e.target.value)}
+                  // value={file}
+                  onChange={(e) => setFile(e.target.files[0])}
                 />
                 <div
                   onClick={handleUploadIconClick}
@@ -351,7 +364,7 @@ const Notes = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        deleteNotes(item.handwritten_i);
+                        deleteNotes(item.handwritten_id);
                         setUid(item.handwritten_id);
                       }}
                     >
@@ -371,7 +384,7 @@ const Notes = () => {
                         handleeditOpen();
                         setUid(item.handwritten_id);
                       }}
-                    // onClick={()=>setUid(item.handwritten.id)}
+                      // onClick={()=>setUid(item.handwritten.id)}
                     >
                       <EditOutlinedIcon
                         style={{ color: "rgba(116, 116, 116, 1)" }}

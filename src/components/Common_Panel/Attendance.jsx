@@ -62,9 +62,10 @@ const Attendance = () => {
   const studentList = useSelector((state) => state.API_Management.Get_Student_List);
   const res = useSelector((state) => state.API_Management.GetClass);
   const res1 = res.map((item) =>
-    item.filter((item) => item.class_id === classId)
+  (item.class_id === classId)
   );
   // const res2 = res1[0]
+  console.log("res1 response is here")
   console.log(res1);
   // const class_name = res1[0].class_master.class_name;
   console.log(res);
@@ -171,15 +172,15 @@ const Attendance = () => {
             <img
               className="rounded-full"
               style={{ height: "140px" }}
-              src={prof.map((item) => item.avtar)}
+              src={prof.avtar}
               alt=""
               srcset=""
             />
           </div>
           <div className="flex flex-col px-4">
             <div className="text-xl font-extrabold">
-              {prof.map((item) => item.first_name)}{" "}
-              {prof.map((item) => item.last_name)}
+              {prof.first_name}{" "}
+              {prof.last_name}
             </div>
             <div className="flex">
               <div

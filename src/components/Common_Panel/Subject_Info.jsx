@@ -98,7 +98,7 @@ const Subject_Info = () => {
 
             </div>
           </Link>
-          <Link to={`/home/notes/${subjectId}`}
+          <Link to={`/home/notes/${classId}/${subjectId}`}
             className="rounded-xl cursor-pointer"
             style={{
               width: "223px",

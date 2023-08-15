@@ -124,7 +124,7 @@ const Assignments = () => {
                   // value={pdf}
                   onChange={(e) => setPdf(e.target.files[0])}
                   id="note-upload"
-                  accept=".pdf"
+                  // type="file"
                   style={{
                     display: "none",
                   }}
@@ -162,8 +162,9 @@ const Assignments = () => {
                   onClick={() => {
                     const formData = new FormData();
                     formData.append("assignment", pdf);
-                    console.log(name);
-                    console.log(desc);
+                    // console.log(name);
+                    // console.log(desc);
+                    console.log(...formData)
                     dispatch(
                       AddAssignments({
                         formData,
@@ -174,11 +175,10 @@ const Assignments = () => {
                         desc,
                         date,
                       })
-                    );
-                    setPdf(null);
-                    setName("");
-                    setDesc("");
-                    setDate("");
+                    )
+                      .then(() => window.location.reload())
+                      .catch((err) => console.log(err));
+
                   }}
                 >
                   Upload
@@ -246,7 +246,11 @@ const Assignments = () => {
                 </div>
 
                 <div className="flex absolute bottom-0">
-                  <Link to={`/home/questionpdfview?qfile=${encodeURIComponent(item.file)}`}>
+                  <Link
+                    to={`/home/questionpdfview?qfile=${encodeURIComponent(
+                      item.file
+                    )}`}
+                  >
                     <button
                       // onClick={() => <PdfViewer pdf={item.file} />}
                       className="rounded-bl-xl rounded-br-xl"
